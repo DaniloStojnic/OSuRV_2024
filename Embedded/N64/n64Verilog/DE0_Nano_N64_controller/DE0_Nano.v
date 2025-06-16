@@ -76,6 +76,8 @@ wire [33:0]buttons_sig;
 wire is_connected;
 assign o_led[7:0]=buttons_sig[7:0];
 
+wire alive;
+
 ////////// UART //////////
 wire uart_start_pulse;
 wire [7:0]uart_byte;
@@ -102,16 +104,16 @@ N64_controller N64_controller_inst
 	.clk_50MHZ(n64_clk) ,	// input  clk_50MHZ_sig
 	.data(io_n64_joypad_1) ,	// inout  data_sig
 	.start(1'b1) ,	// input  start_sig
-	.buttons(buttons_sig[33:0])//,	// output [33:0] buttons_sig
-	//.alive(is_connected)
+	.buttons(buttons_sig[33:0]),	// output [33:0] buttons_sig
+	.alive(alive)
 ); 
 
 // Detekcija da je N64 poruka spremna
 reg alive_d = 1'b0;
 always @(posedge n64_clk) begin
-	alive_d <= N64_controller_inst.alive;		// jedan takt kašnjenja
+	alive_d <= alive;		// jedan takt kašnjenja
 end
-assign uart_start_pulse = N64_controller_inst.alive ^ alive_d;		// XOR = impuls
+assign uart_start_pulse = alive ^ alive_d;		// XOR = impuls
 
 UART_TX #(
 	.g_CLKS_PER_BIT(434)
