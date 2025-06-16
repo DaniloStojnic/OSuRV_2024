@@ -24,10 +24,10 @@ module DE0_Nano(
 	GPIO,
 	GPIO_IN,
 	
-	io_n64_joypad_1
+	io_n64_joypad_1,
 	
 	//////////// UART //////////
-	//o_uart
+	o_uart_tx
 );
 
 //=======================================================
@@ -60,6 +60,8 @@ input 		     [1:0]		GPIO_IN;
 
 inout								io_n64_joypad_1;
 
+//////////// UART //////////
+output 							o_uart_tx;
 
 //=======================================================
 //  REG/WIRE declarations
@@ -84,6 +86,7 @@ wire [7:0]uart_byte;
 wire uart_busy;
 wire uart_tx;
 assign uart_byte[7:0] = buttons_sig[7:0];
+assign o_uart_tx = uart_tx;
 
 
 //=======================================================
