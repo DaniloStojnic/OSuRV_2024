@@ -60,18 +60,6 @@ input 		     [1:0]		GPIO_IN;
 
 inout								io_n64_joypad_1;
 
-//////////// UART ////////////
-//output 				[7:0]		o_uart;
-
-/////////// UART signals //////////
-wire uart_start_pulse;
-wire [7:0] uart_byte;	
-wire uart_busy;	// linija je zauzeta-> altivno pisanje
-wire uart_tx;	// izlazni pin - ide na RaspberryPi
-
-// TO DO: treba spustiti na pin 8 bita
-// Primjer: assign uart_byte[7:0] = buttons_sig[7:0]
-
 
 //=======================================================
 //  REG/WIRE declarations
@@ -87,6 +75,13 @@ wire n_rst;
 wire [33:0]buttons_sig;
 wire is_connected;
 assign o_led[7:0]=buttons_sig[7:0];
+
+////////// UART //////////
+wire uart_start_pulse;
+wire [7:0]uart_byte;
+wire uart_busy;
+wire uart_tx;
+assign uart_byte[7:0] = buttons_sig[7:0];
 
 
 //=======================================================
@@ -111,15 +106,25 @@ N64_controller N64_controller_inst
 	//.alive(is_connected)
 ); 
 
- uart_tc uart_tx_inst
- (
+// Detekcija da je N64 poruka spremna
+reg alive_d = 1'b0;
+always @(posedge n64_clk) begin
+	alive_d <= N64_controller_inst.alive;		// jedan takt kašnjenja
+end
+assign uart_start_pulse = N64_controller_inst.alive ^ alive_d;		// XOR = impuls
+
+UART_TX #(
+	.g_CLKS_PER_BIT(434)
+) uart_tx_inst (
 	.i_Clk (n64_clk),
 	.i_TX_DV (uart_start_pulse),
 	.i_TX_Byte (uart_byte[7:0]),
 	.o_TX_Active (uart_busy),
 	.o_TX_Serial (uart_tx),
 	.o_TX_Done ( )
- );
+);
+
+
 
 
 endmodule
