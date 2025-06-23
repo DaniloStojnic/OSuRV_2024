@@ -3,8 +3,8 @@ JedecChain;
 	FileRevision(JESD32A);
 	DefaultMfr(6E);
 
-	P ActionCode(Cfg)
-		Device PartName(10M16SAU169) Path("/home/rtrk/Desktop/LPRS2_PROJ/LPRS2_2024-1/n64Verilog/DE0_Nano_N64_controller/") File("DE0_Nano.sof") MfrSpec(OpMask(1));
+	P ActionCode(Ign)
+		Device PartName(10M16SAU169) MfrSpec(OpMask(0) Child_OpMask(2 1 0) FullPath("/home/rtrk/Desktop/DS/OSuRV_2024/Embedded/N64/n64Verilog/DE0_Nano_N64_controller/DE0_Nano.pof"));
 
 ChainEnd;
 

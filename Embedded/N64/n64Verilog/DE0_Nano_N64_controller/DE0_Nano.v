@@ -6,23 +6,12 @@
 module DE0_Nano(
 
 	//////////// CLOCK //////////
-	CLOCK_50,
 	i_clk,
 	in_rst,
 
-	//////////// LED //////////
-	LED,
+
 	o_led,
 
-	//////////// KEY //////////
-	KEY,
-
-	//////////// SW //////////
-	SW,
-
-	//////////// GPIO_0, GPIO_0 connect to GPIO Default //////////
-	GPIO,
-	GPIO_IN,
 	
 	io_n64_joypad_1,
 	
@@ -40,23 +29,12 @@ module DE0_Nano(
 //=======================================================
 
 //////////// CLOCK //////////
-input 		          		CLOCK_50;
 input								i_clk;
 input								in_rst;
 
 //////////// LED //////////
-output		     [7:0]		LED;
 output		     [7:0]		o_led;
 
-//////////// KEY //////////
-input 		     [1:0]		KEY;
-
-//////////// SW //////////
-input 		     [3:0]		SW;
-
-//////////// GPIO_0, GPIO_0 connect to GPIO Default //////////
-inout 		    [33:0]		GPIO;
-input 		     [1:0]		GPIO_IN;
 
 inout								io_n64_joypad_1;
 
@@ -111,18 +89,11 @@ N64_controller N64_controller_inst
 	.alive(alive)
 ); 
 
-// Detekcija da je N64 poruka spremna
-reg alive_d = 1'b0;
-always @(posedge n64_clk) begin
-	alive_d <= alive;		// jedan takt kašnjenja
-end
-assign uart_start_pulse = alive ^ alive_d;		// XOR = impuls
-
 UART_TX #(
 	.g_CLKS_PER_BIT(434)
 ) uart_tx_inst (
 	.i_Clk (n64_clk),
-	.i_TX_DV (uart_start_pulse),
+	.i_TX_DV (alive),
 	.i_TX_Byte (uart_byte[7:0]),
 	.o_TX_Active (uart_busy),
 	.o_TX_Serial (uart_tx),
